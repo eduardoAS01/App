@@ -2,7 +2,7 @@
 class ProductService():
 
     @staticmethod
-    def check_profit(cost_price,sale_price):
+    def check_profit(cost_price:float,sale_price:float):
 
         if cost_price >= sale_price:
             return{

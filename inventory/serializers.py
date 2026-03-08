@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Product
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class WriteProductSerializer(serializers.ModelSerializer):
     profit = serializers.ReadOnlyField()
     profit_percentage = serializers.ReadOnlyField()
     
@@ -33,4 +33,11 @@ class ProductSerializer(serializers.ModelSerializer):
         if Product.objects.filter(name__iexact = value).exists():
             raise serializers.ValidationError("A product with this name already exists.")
         return value
-    
+
+class ReadProductSerializer(serializers.ModelSerializer):
+    profit = serializers.ReadOnlyField()
+    profit_percentage = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Product
+        fields = ("name","description","cost_price","sale_price","profit","profit_percentage","quantity")

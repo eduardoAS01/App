@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'inventory',
     'user',
     'income',
-    'rest_framework'
+    'rest_framework',
+    'invetory_record'
 ]
 
 MIDDLEWARE = [

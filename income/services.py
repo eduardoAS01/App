@@ -1,53 +1,93 @@
 from inventory.models import Product
 from rest_framework.exceptions import ValidationError
 from .models import Income,Sale,SaleItem 
+from invetory_record.models import StockMovement
+from django.db import transaction
+from django.db.models import F
 
 
 class IncomeServices():
     
     @staticmethod
     def calculated_amount(products:list):
-        print(1)
-        products_ids = [id['product'] for id in products]
-        print(2)
-        items = []
         amount = 0
 
         for item in products:
-            product_id = item['product']
-            quantity = item['quantity']
+            product = item["product"]
+            quantity = item["quantity"]
             
-            total = product_id.sale_price * quantity
+            total = product.sale_price * quantity
             amount += total
-            items.append({
-                "product":product_id,
-                "quantity":quantity,
-                "unit_price":product_id.sale_price,
-                "total": total
-            })
+            
+        return amount
+    
+    @staticmethod
+    def create_income(validated_data:dict):
+        
+        with transaction.atomic():
+        
+            user = validated_data.get('user')
+            products = validated_data.pop("products",[])
+            income_type = validated_data["income_type"]
+            
+            sale = None
+            amount = validated_data['amount']
             
 
-        return amount,items
-    
-    
-    def create_sale_objects(self,validated_data:dict):
-        user = validated_data.get('user')
-        amount,items = self.calculated_amount(validated_data.get('products'))
+            
+            if income_type == "PRODUCT_SALE":
+                
+                sale = Sale.objects.create(
+                    user = user,
+                    amount = amount
+                )
+                
+                for item in products:
+                    try:
+                        product = Product.objects.select_for_update().get(id=item["product"].id,user=user)
+                    except Product.DoesNotExist:
+                        raise ValidationError("product not found")
+                    
+                    quantity = item["quantity"]
+                    
+                    if quantity > product.quantity:
+                        raise ValidationError("Not enough stock")
+                    
+                    unit_price = product.sale_price
 
-        sale = Sale.objects.create(
-            user = user,
-            amount = amount
-        )
-
-        for item in items:
-            SaleItem.objects.create(
+                    
+                    total = unit_price * quantity
+                    
+                    SaleItem.objects.create(
+                        sale = sale,
+                        product = product,
+                        quantity = quantity,
+                        unit_price = unit_price,
+                        total = total
+                    )
+                    
+                    old_quantity = product.quantity
+                    product.quantity = F("quantity") - quantity
+                    product.save()
+                    product.refresh_from_db()
+                    
+                    StockMovement.objects.create(
+                        product = product,
+                        new_quantity = quantity,
+                        old_quantity = old_quantity,
+                        reason = "SALE"
+                    )
+                                        
+            
+            income = Income.objects.create(
+                user = user,
                 sale = sale,
-                product = item['product'],
-                quantity = item['quantity'],
-                unit_price = item['unit_price'],
-                total = item['total']
+                income_type = income_type,
+                amount = amount,
+                comment = validated_data.get('comment')
             )
-        return sale
+            
+            return income
     
 
 

@@ -34,7 +34,7 @@ class Income(models.Model):
     sale = models.OneToOneField(Sale,on_delete=models.CASCADE,null=True,blank=True)
     income_type = models.CharField(max_length=20,choices=IncomeType.choices)
     amount = models.DecimalField(max_digits=10,decimal_places=2)
-    comment = models.CharField(blank=True,null=True)
+    comment = models.CharField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     
