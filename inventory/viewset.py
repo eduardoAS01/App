@@ -43,7 +43,7 @@ class ProductViewset(viewsets.ModelViewSet):
         StockMovement.objects.create(
            product = product,
            new_quantity = product.quantity,
-           reason = "PURCHASE"
+           reason = "INITIAL"
         )
 
     def get_queryset(self):
@@ -87,5 +87,6 @@ class ProductViewset(viewsets.ModelViewSet):
                     product = updated_product,
                     new_quantity = new_quantity,
                     old_quantity = old_quantity,
+                    quantity_change = difference,
                     reason = "ADJUSTMENT"
                 )

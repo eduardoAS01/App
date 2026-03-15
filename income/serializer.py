@@ -1,16 +1,16 @@
 from rest_framework import serializers
 from .models import Income,SaleItem,Sale
 from inventory.models import Product
-from datetime import timezone
 from .services import IncomeServices
-from django.db import transaction
 
 class SaleItemSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(queryset = Product.objects.all(),write_only = True)
+    product = serializers.PrimaryKeyRelatedField(queryset = Product.objects.all())
+    product_name = serializers.CharField(source ="product.name",read_only = True)
     
     class Meta():
         model = SaleItem
-        fields = ("product","quantity")
+        fields = ("product","product_name","quantity","unit_price")
+        only_read_fields = ("unit_price")
  
     
     def validate(self,data):
@@ -24,7 +24,13 @@ class SaleItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"Not enough stock for {product.name}")
 
         return data
-        
+    
+class SaleSerializer(serializers.ModelSerializer):
+    products = SaleItemSerializer(many = True, read_only=True)
+
+    class Meta():
+        model = Sale
+        fields = ("amount","date","products")        
             
 
 class IncomeSerializer(serializers.ModelSerializer):

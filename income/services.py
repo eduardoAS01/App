@@ -68,6 +68,7 @@ class IncomeServices():
                     
                     old_quantity = product.quantity
                     product.quantity = F("quantity") - quantity
+                    change = product.quantity - old_quantity
                     product.save()
                     product.refresh_from_db()
                     
@@ -75,6 +76,8 @@ class IncomeServices():
                         product = product,
                         new_quantity = quantity,
                         old_quantity = old_quantity,
+                        quantity_change = change,
+                        sale = sale,
                         reason = "SALE"
                     )
                                         
@@ -84,7 +87,7 @@ class IncomeServices():
                 sale = sale,
                 income_type = income_type,
                 amount = amount,
-                comment = validated_data.get('comment')
+                comment = validated_data.get('comment',"")
             )
             
             return income

@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'user',
     'income',
     'rest_framework',
-    'invetory_record'
+    'invetory_record',
+    'expense'
 ]
 
 MIDDLEWARE = [

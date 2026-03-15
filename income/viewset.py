@@ -1,7 +1,7 @@
 from rest_framework import viewsets,permissions,filters
-from .serializer import IncomeSerializer
-from .models import Income,Sale,SaleItem
-from invetory_record.models import StockMovement
+from .serializer import IncomeSerializer,SaleSerializer
+from .models import Income,Sale
+
 
 class IncomeViewset(viewsets.ModelViewSet):
     queryset = Income.objects.all()
@@ -18,3 +18,10 @@ class IncomeViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         return Income.objects.filter(user = self.request.user)
     
+class SaleViewset(viewsets.ReadOnlyModelViewSet):
+    queryset = Sale.objects.all()
+    serializer_class = SaleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Sale.objects.filter(user = self.request.user)
