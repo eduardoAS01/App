@@ -5,6 +5,10 @@ from .serializers import WriteProductSerializer,ReadProductSerializer
 from .services import ProductService
 from invetory_record.models import StockMovement
 from django.db import transaction
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
+from business.models import Business
+
 
 class ProductViewset(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -39,12 +43,19 @@ class ProductViewset(viewsets.ModelViewSet):
         return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_create(self, serializer):
-        product = serializer.save(user = self.request.user)
-        StockMovement.objects.create(
-           product = product,
-           new_quantity = product.quantity,
-           reason = "INITIAL"
-        )
+        with transaction.atomic():
+            user = self.request.user
+
+            business = Business.objects.filter(owner = user).first()
+
+            product = serializer.save(user = user,business = business)
+            
+            StockMovement.objects.create(
+            product = product,
+            new_quantity = product.quantity,
+            reason = "INITIAL",
+            business = business
+            )
 
     def get_queryset(self):
         return Product.objects.filter(user = self.request.user)
@@ -90,3 +101,32 @@ class ProductViewset(viewsets.ModelViewSet):
                     quantity_change = difference,
                     reason = "ADJUSTMENT"
                 )
+
+    @action(detail=True,methods=["post"])
+    def adjust_stock(self,request,pk=None):
+
+        product = self.get_object()
+
+        new_quantity = int(request.data.get("new_quantity"))
+        comment = request.data.get("comment","")
+
+        old_quantity = product.quantity
+        change = new_quantity -old_quantity
+
+        if new_quantity < 0:
+            raise ValidationError("Stock cant not be negative")
+        
+        StockMovement.objects.create(
+            product = product,
+            business = product.business,
+            old_quantity = old_quantity,
+            new_quantity = new_quantity,
+            quantity_change = change,
+            reason = "ADJUSTMENT",
+            comment = comment
+        )
+
+        product.quantity = new_quantity
+        product.save()
+
+        return Response({"message":"Stock adjusted"})
