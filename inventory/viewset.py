@@ -7,7 +7,7 @@ from invetory_record.models import StockMovement
 from django.db import transaction
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
-from business.models import Business
+from business.models import Business,BusinessMember
 
 
 class ProductViewset(viewsets.ModelViewSet):
@@ -46,7 +46,8 @@ class ProductViewset(viewsets.ModelViewSet):
         with transaction.atomic():
             user = self.request.user
 
-            business = Business.objects.filter(owner = user).first()
+            business_member = BusinessMember.objects.filter(user = user).first()
+            business = business_member.business
 
             product = serializer.save(user = user,business = business)
             
@@ -58,7 +59,9 @@ class ProductViewset(viewsets.ModelViewSet):
             )
 
     def get_queryset(self):
-        return Product.objects.filter(user = self.request.user)
+        business_member = BusinessMember.objects.filter(user = self.request.user).first()
+        business = business_member.business
+        return Product.objects.filter(business=business)
 
     def update(self, request, *args, **kwargs):
         with transaction.atomic():

@@ -29,29 +29,7 @@ class BusinessMemberViewset(viewsets.ModelViewSet):
     serializer_class = BusinessMemberSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def perform_create(self, serializer):
+
         
-        membership = BusinessMember.objects.get(user = self.request.user)
-
-        if not membership:
-            raise ValidationError("User has no business")
-
-        business = membership.business
-
-        if membership.role != "Owner":
-            raise PermissionDenied("Only owner can add members")
-        
-        email = serializer.validated_data["email"]
-
-        user = User.objects.filter(email=email).first()
-
-        if not user:
-            raise ValidationError("User not found")
-        
-        if BusinessMember.objects.filter(user=user,business=business).exists():
-            raise ValidationError("User already in business")
-
-        serializer.save(user=user,business=business)
-        print(serializer.validated_data)
 
     
