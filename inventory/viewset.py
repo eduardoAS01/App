@@ -59,8 +59,7 @@ class ProductViewset(viewsets.ModelViewSet):
             )
 
     def get_queryset(self):
-        business_member = BusinessMember.objects.filter(user = self.request.user).first()
-        business = business_member.business
+        business = self.request.user.active_business
         return Product.objects.filter(business=business)
 
     def update(self, request, *args, **kwargs):

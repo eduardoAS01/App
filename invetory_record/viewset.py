@@ -9,4 +9,4 @@ class StockMovementViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return StockMovement.objects.filter(user = self.request.user)
+        return StockMovement.objects.filter(user = self.request.user.active_business)

@@ -15,11 +15,15 @@ class BusinessViewset(viewsets.ModelViewSet):
         return Business.objects.filter(owner = self.request.user)
     
     def perform_create(self, serializer):
-        
-        business = serializer.save(owner = self.request.user)
+        user = self.request.user
+
+        business = serializer.save(owner = user)
+
+        user.active_business = business
+        user.save()
 
         BusinessMember.objects.create(
-            user = self.request.user,
+            user = user,
             business = business,
             role = "Owner"
         )

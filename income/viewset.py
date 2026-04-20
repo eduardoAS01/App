@@ -16,7 +16,7 @@ class IncomeViewset(viewsets.ModelViewSet):
         
 
     def get_queryset(self):
-        return Income.objects.filter(user = self.request.user)
+        return Income.objects.filter(user = self.request.user.active_business)
     
 class SaleViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Sale.objects.all()
@@ -24,4 +24,4 @@ class SaleViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Sale.objects.filter(user = self.request.user)
+        return Sale.objects.filter(user = self.request.user.active_business)

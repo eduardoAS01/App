@@ -16,7 +16,7 @@ class ExpenseViewset(viewsets.ModelViewSet):
         
 
     def get_queryset(self):
-        return Expense.objects.filter(user = self.request.user)
+        return Expense.objects.filter(user = self.request.user.active_business)
 
 class PurchaseViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Purchase.objects.all()
@@ -24,4 +24,4 @@ class PurchaseViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Purchase.objects.filter(user = self.request.user)
+        return Purchase.objects.filter(user = self.request.user.active_business)
