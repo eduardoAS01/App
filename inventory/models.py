@@ -11,7 +11,7 @@ class Product(models.Model):
     quantity = models.IntegerField(default=0,verbose_name="Product quantity")
     cost_price = models.DecimalField(max_digits=10,decimal_places=2,verbose_name="Product cost price")
     sale_price = models.DecimalField(max_digits=10,decimal_places=2,verbose_name="Product sale price")
-    image = models.ImageField(upload_to='product/',null=True,blank=True)
+    image = models.ImageField(upload_to='media/product/',null=True,blank=True)
     active = models.BooleanField(default=True,verbose_name="Product still saling")
     created_at = models.DateTimeField(auto_now_add=True,verbose_name="Preoduct created date",db_index=True)
 
