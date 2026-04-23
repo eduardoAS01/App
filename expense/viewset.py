@@ -12,11 +12,12 @@ class ExpenseViewset(viewsets.ModelViewSet):
     ordering = ["created_at"]
 
     def perform_create(self, serializer):
-        serializer.save(user = self.request.user)
+        user = self.request.user
+        serializer.save(user = user,business = user.active_business)
         
 
     def get_queryset(self):
-        return Expense.objects.filter(user = self.request.user.active_business)
+        return Expense.objects.filter(business = self.request.user.active_business)
 
 class PurchaseViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Purchase.objects.all()
@@ -24,4 +25,4 @@ class PurchaseViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Purchase.objects.filter(user = self.request.user.active_business)
+        return Purchase.objects.filter(business = self.request.user.active_business)

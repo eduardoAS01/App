@@ -12,11 +12,12 @@ class IncomeViewset(viewsets.ModelViewSet):
     ordering = ["created_at"]
 
     def perform_create(self, serializer):
-        serializer.save(user = self.request.user)
+        user = self.request.user
+        serializer.save(user = user,business = user.active_business)
         
 
     def get_queryset(self):
-        return Income.objects.filter(user = self.request.user.active_business)
+        return Income.objects.filter(business = self.request.user.active_business)
     
 class SaleViewset(viewsets.ReadOnlyModelViewSet):
     queryset = Sale.objects.all()
@@ -24,4 +25,4 @@ class SaleViewset(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Sale.objects.filter(user = self.request.user.active_business)
+        return Sale.objects.filter(business = self.request.user.active_business)

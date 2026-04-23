@@ -9,7 +9,7 @@ class SaleItemSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = SaleItem
-        fields = ("product","product_name","quantity","unit_price")
+        fields = ("product","product_name","quantity")
         only_read_fields = ("unit_price")
  
     

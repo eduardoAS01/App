@@ -101,7 +101,8 @@ class ProductViewset(viewsets.ModelViewSet):
                     new_quantity = new_quantity,
                     old_quantity = old_quantity,
                     quantity_change = difference,
-                    reason = "ADJUSTMENT"
+                    reason = "ADJUSTMENT",
+                    business = self.request.user.active_business
                 )
 
     @action(detail=True,methods=["post"])
@@ -125,7 +126,8 @@ class ProductViewset(viewsets.ModelViewSet):
             new_quantity = new_quantity,
             quantity_change = change,
             reason = "ADJUSTMENT",
-            comment = comment
+            comment = comment,
+            business = self.request.user.active_business
         )
 
         product.quantity = new_quantity

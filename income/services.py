@@ -27,6 +27,7 @@ class IncomeServices():
         with transaction.atomic():
         
             user = validated_data.get('user')
+            business = validated_data.get('business')
             products = validated_data.pop("products",[])
             income_type = validated_data["income_type"]
             
@@ -39,7 +40,8 @@ class IncomeServices():
                 
                 sale = Sale.objects.create(
                     user = user,
-                    amount = amount
+                    amount = amount,
+                    business = business
                 )
                 
                 for item in products:
@@ -63,22 +65,25 @@ class IncomeServices():
                         product = product,
                         quantity = quantity,
                         unit_price = unit_price,
-                        total = total
+                        total = total,
+                        business = business
                     )
                     
                     old_quantity = product.quantity
                     product.quantity = F("quantity") - quantity
-                    change = product.quantity - old_quantity
                     product.save()
                     product.refresh_from_db()
+                    change = product.quantity - old_quantity
+                    new_quantity = old_quantity + change
                     
                     StockMovement.objects.create(
                         product = product,
-                        new_quantity = quantity,
+                        new_quantity = new_quantity,
                         old_quantity = old_quantity,
                         quantity_change = change,
                         sale = sale,
-                        reason = "SALE"
+                        reason = "SALE",
+                        business = business
                     )
                                         
             
@@ -87,6 +92,7 @@ class IncomeServices():
                 sale = sale,
                 income_type = income_type,
                 amount = amount,
+                business = business,
                 comment = validated_data.get('comment',"")
             )
             

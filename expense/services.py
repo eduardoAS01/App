@@ -29,6 +29,7 @@ class ExpenseServices():
             user = validated_data.get('user')
             products = validated_data.pop("products",[])
             expense_type = validated_data["expense_type"]
+            business = validated_data.get["business"]
             
             purchase = None
             amount = validated_data['amount']
@@ -39,7 +40,8 @@ class ExpenseServices():
                 
                 purchase = Purchase.objects.create(
                     user = user,
-                    amount = amount
+                    amount = amount,
+                    business = business
                 )
                 
                 for item in products:
@@ -60,22 +62,25 @@ class ExpenseServices():
                         product = product,
                         quantity = quantity,
                         unit_price = unit_price,
-                        total = total
+                        total = total,
+                        business = business
                     )
                     
                     old_quantity = product.quantity
                     product.quantity = F("quantity") + quantity
-                    change = product.quantity - old_quantity
                     product.save()
                     product.refresh_from_db()
+                    change = product.quantity - old_quantity
+                    new_quantity = old_quantity + change
                     
                     StockMovement.objects.create(
                         product = product,
-                        new_quantity = quantity,
+                        new_quantity = new_quantity,
                         old_quantity = old_quantity,
                         quantity_change = change,
                         purchase = purchase,
-                        reason = "PURCHASE"
+                        reason = "PURCHASE",
+                        business = business
                     )
                                         
             
@@ -84,7 +89,8 @@ class ExpenseServices():
                 purchase = purchase,
                 expense_type = expense_type,
                 amount = amount,
-                comment = validated_data.get('comment',"")
+                comment = validated_data.get('comment',""),
+                business = business
             )
             
             return expense
