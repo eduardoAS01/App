@@ -126,8 +126,7 @@ class ProductViewset(viewsets.ModelViewSet):
             new_quantity = new_quantity,
             quantity_change = change,
             reason = "ADJUSTMENT",
-            comment = comment,
-            business = self.request.user.active_business
+            comment = comment
         )
 
         product.quantity = new_quantity
