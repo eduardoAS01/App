@@ -29,14 +29,14 @@ class ExpenseServices():
             user = validated_data.get('user')
             products = validated_data.pop("products",[])
             expense_type = validated_data["expense_type"]
-            business = validated_data.get["business"]
+            business = validated_data.get("business")
             
             purchase = None
             amount = validated_data['amount']
             
 
             
-            if expense_type == "PRODUCT_PURCHASE":
+            if expense_type == "PURCHASE_PRODUCT":
                 
                 purchase = Purchase.objects.create(
                     user = user,
@@ -46,7 +46,7 @@ class ExpenseServices():
                 
                 for item in products:
                     try:
-                        product = Product.objects.select_for_update().get(id=item["product"].id,user=user)
+                        product = Product.objects.select_for_update().get(id=item["product"].id,business=business)
                     except Product.DoesNotExist:
                         raise ValidationError("product not found")
                     

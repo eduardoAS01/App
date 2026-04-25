@@ -44,3 +44,20 @@ class BusinessMemberSerializer(serializers.ModelSerializer):
         validated_data['business'] = business
 
         return super().create(validated_data)
+    
+class ReadBusinessMemberSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source = "user.username", read_only = True)
+    first_name = serializers.CharField(source = "user.first_name",read_only = True)
+    last_name = serializers.CharField(source = "user.last_name",read_only = True)
+    business_name = serializers.CharField(source = "business.name",read_only = True)
+
+    class Meta():
+        model = BusinessMember
+        fields = ("username","first_name","last_name","business_name","role")
+    
+class ReadBusinessSerializer(serializers.ModelSerializer):
+    business_name = serializers.CharField(source = "business.name",read_only = True)
+
+    class Meta():
+        model = BusinessMember
+        fields = ("business_name","role")

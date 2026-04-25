@@ -6,4 +6,4 @@ class StockMovementSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = StockMovement
-        fields = ("product","product_name","old_quantity","new_quantiy","quantity_change","reason","comment","created_at")
+        fields = ("product","product_name","old_quantity","new_quantity","quantity_change","reason","comment","created_at")

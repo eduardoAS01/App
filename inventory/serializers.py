@@ -3,13 +3,10 @@ from .models import Product
 
 
 class WriteProductSerializer(serializers.ModelSerializer):
-    profit = serializers.ReadOnlyField()
-    profit_percentage = serializers.ReadOnlyField()
-    
-
+  
     class Meta():
         model = Product
-        fields = ("id","name","description","cost_price","sale_price","active","created_at","profit","profit_percentage","quantity","image")
+        fields = ("name","description","cost_price","sale_price","quantity","image")
         read_only_fields = ("created_at",)
 
     def validate(self, data):

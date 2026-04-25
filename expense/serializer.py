@@ -10,7 +10,8 @@ class PurchaseItemSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = PurchaseItem
-        fields = ("product","product_name","quantity","unit_price")
+        fields = ("product","product_name","quantity","unit_price","total")
+        read_only_fields = ("unit_price","total")
 
     def validate(self,data):
         quantity = data["quantity"]

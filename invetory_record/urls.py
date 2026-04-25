@@ -3,6 +3,6 @@ from .viewset import StockMovementViewset
 
 router = routers.DefaultRouter()
 
-router.register("stock_movements",StockMovementViewset,"stock_movements")
+router.register("stock-movements",StockMovementViewset,"stock_movements")
 
 urlpatterns = router.urls

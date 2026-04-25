@@ -46,7 +46,7 @@ class IncomeServices():
                 
                 for item in products:
                     try:
-                        product = Product.objects.select_for_update().get(id=item["product"].id,user=user)
+                        product = Product.objects.select_for_update().get(id=item["product"].id,business=business)
                     except Product.DoesNotExist:
                         raise ValidationError("product not found")
                     

@@ -2,18 +2,18 @@ from .models import BusinessMember
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,permissions
-from .serializers import BusinessMemberSerializer
+from .serializers import ReadBusinessSerializer
 
 class SetActiveBusiness(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self,request):
-        business_id = request.data.get("business_id")
+        business = request.data.get("business")
 
-        if not business_id:
+        if not business:
             return Response({"error":"business id is required"},status=status.HTTP_400_BAD_REQUEST)
         
-        membership = BusinessMember.objects.filter(user = request.user, business = business_id).first()
+        membership = BusinessMember.objects.filter(user = request.user, business = business).first()
         
         if not membership:
             return Response({"error":"You do not belong to this business"},status=status.HTTP_403_FORBIDDEN)
@@ -30,9 +30,9 @@ class GetBusinesses(APIView):
     def get(self,request):
         user = self.request.user
         businesses = BusinessMember.objects.filter(user = user).select_related("business")
-        serializer = BusinessMemberSerializer(businesses,many = True)
+        serializer = ReadBusinessSerializer(businesses,many = True)
 
         return Response({
-            "aactive_business": user.active_business.name,
+            "active_business": user.active_business.name,
             "business": serializer.data
         })
