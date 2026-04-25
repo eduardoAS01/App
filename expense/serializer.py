@@ -5,7 +5,7 @@ from .services import ExpenseServices
 
 
 class PurchaseItemSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(queryset = Product.objects.all(),write_only =True)
+    product = serializers.PrimaryKeyRelatedField(queryset = Product.objects.all())
     product_name = serializers.CharField(source ="product.name",read_only = True)
 
     class Meta():

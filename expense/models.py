@@ -15,7 +15,7 @@ class Purchase(models.Model):
         return f"{self.user} Amount: {self.amount}"
     
 class PurchaseItem(models.Model):
-    purchase = models.ForeignKey(Purchase,on_delete=models.CASCADE,verbose_name="Purchase id")
+    purchase = models.ForeignKey(Purchase,on_delete=models.CASCADE,verbose_name="Purchase id",related_name="products")
     product = models.ForeignKey(Product,on_delete=models.CASCADE,verbose_name="Product id",db_index=True)
     quantity = models.IntegerField(verbose_name="quantity")
     unit_price = models.DecimalField(max_digits=10,decimal_places=2,verbose_name="Price per unit")
