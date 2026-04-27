@@ -15,7 +15,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         user = User.objects.create_user(**validated_data)
         
-        print(user)
         if image:
             user.image = image
             user.save()
