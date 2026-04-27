@@ -1,0 +1,18 @@
+#Virtual Enviroment
+
+venv/
+binv/
+.env
+
+#Python
+
+*.pyc
+*.pyo
+
+/media
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
