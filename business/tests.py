@@ -12,10 +12,11 @@ class BusinessTests(APITestCase):
     
     def setUp(self):
         
+
         self.user = User.objects.create_user(
             username="paco",
             email="paco@gmail.com",
-            password = "qwerty1234."
+            password = "qwerty1234.",
         )
 
         self.client.force_authenticate(user=self.user)
@@ -25,6 +26,8 @@ class BusinessTests(APITestCase):
             owner = self.user
         )
 
+        self.user.active_business = self.business
+
         self.business_member = BusinessMember.objects.create(
             user = self.user,
             business = self.business,
@@ -32,7 +35,7 @@ class BusinessTests(APITestCase):
         )
 
         self.url_list = reverse("business-list")
-        self.url_detail = reverse("business-detail")
+        self.url_detail = reverse("business-detail",args=[self.business.id])
 
     def test_create_business(self):
         
@@ -53,11 +56,29 @@ class BusinessTests(APITestCase):
 
     def test_get_business(self):
         id = 1
-        response = self.client.get(f"{self.url_detail}{id}/")
+        response = self.client.get(self.url_detail)
         self.assertEqual(response.status_code,status.HTTP_200_OK)
     
     def test_patch_business(self):
-        response = self.client.patch(f"{self.url_detail}{id}/")
+        response = self.client.patch(self.url_detail)
         self.assertEqual(response.status_code,status.HTTP_200_OK)
 
-        
+    def test_delete_business(self):
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code,status.HTTP_204_NO_CONTENT)
+
+    def test_set_active_business_view(self):
+        url = reverse("set_active_business")
+
+        data = {
+            "business":self.business.id
+        }
+        response = self.client.post(url,data)
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+    def test_my_business_view(self):
+        url = reverse("get_my_businesses")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
