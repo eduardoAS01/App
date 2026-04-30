@@ -19,8 +19,6 @@ class BusinessTests(APITestCase):
             password = "qwerty1234.",
         )
 
-        self.client.force_authenticate(user=self.user)
-
         self.business = Business.objects.create(
             name = fake.company(),
             owner = self.user
@@ -31,8 +29,10 @@ class BusinessTests(APITestCase):
         self.business_member = BusinessMember.objects.create(
             user = self.user,
             business = self.business,
-            role = "employee"
+            role = "Owner"
         )
+
+        self.client.force_authenticate(user=self.user)
 
         self.url_list = reverse("business-list")
         self.url_detail = reverse("business-detail",args=[self.business.id])
@@ -55,12 +55,16 @@ class BusinessTests(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_200_OK)
 
     def test_get_business(self):
-        id = 1
         response = self.client.get(self.url_detail)
         self.assertEqual(response.status_code,status.HTTP_200_OK)
     
     def test_patch_business(self):
-        response = self.client.patch(self.url_detail)
+        
+        data = {
+            "name":fake.company()
+        }
+        response = self.client.patch(self.url_detail,data)
+
         self.assertEqual(response.status_code,status.HTTP_200_OK)
 
     def test_delete_business(self):
@@ -82,3 +86,61 @@ class BusinessTests(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+    def test_add_business_member(self):
+
+        url = reverse("add_member-list")
+
+        user = User.objects.create_user(
+            username=fake.user_name(),
+            email=fake.email(),
+            password=fake.password()
+        )
+
+        data = {
+            "email": user.email,
+            "role":"employee"
+        }
+
+        response = self.client.post(url,data)
+
+        self.assertEqual(response.status_code,status.HTTP_201_CREATED)
+
+    def test_get_business_members(self):
+        
+        url = reverse("add_member-list")
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+    def test_get_business_member(self):
+        
+        url = reverse("add_member-detail",args=[self.business_member.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+    def test_patch_business_member(self):
+        
+        url = reverse("add_member-detail",args=[self.business_member.id])
+
+        data = {
+            "role":"employee"
+        }
+
+        response = self.client.patch(url,data)
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+    def test_delete_business_member(self):
+
+        url = reverse("add_member-detail",args=[self.business_member.id])
+
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code,status.HTTP_204_NO_CONTENT)
+        
+        
+
