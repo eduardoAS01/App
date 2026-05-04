@@ -55,6 +55,8 @@ class IncomeTests(APITestCase):
 
         self.url_income_list = reverse("income-list")
         self.url_income_detail = reverse("income-detail",args=[self.income.id])
+        self.url_sale_list = reverse("sale-list")
+        self.url_sale_detail = reverse("sale-detail",args=[self.sale.id])
 
     
     def test_create_income(self):
@@ -112,4 +114,17 @@ class IncomeTests(APITestCase):
         response = self.client.delete(self.url_income_detail)
 
         self.assertEqual(response.status_code,status.HTTP_204_NO_CONTENT)
+
+    def test_get_sales(self):
+
+        response = self.client.get(self.url_sale_list)
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+
+
+    def test_get_sale(self):
+
+        response = self.client.get(self.url_sale_detail)
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
     
