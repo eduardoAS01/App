@@ -11,7 +11,7 @@ class RegisterView(APIView):
     def post(self,request):
         serializer = RegisterSerializer(data = request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        serializer.save()
         
         return Response(
             {"message":"Succesfully register user"},
